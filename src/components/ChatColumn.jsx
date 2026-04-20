@@ -7,12 +7,19 @@ export default function ChatColumn({ chatMessages, setChatMessages, transcriptCh
   const [inputText, setInputText] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const bottomRef = useRef(null);
+  const autoScrollRef = useRef(true);
 
   useEffect(() => {
-    if (bottomRef.current) {
+    if (bottomRef.current && autoScrollRef.current) {
       bottomRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [chatMessages, isTyping]);
+
+  const handleScroll = (e) => {
+    const { scrollTop, scrollHeight, clientHeight } = e.target;
+    // If within 100px of bottom, stick to bottom. Otherwise, user has scrolled up.
+    autoScrollRef.current = scrollHeight - scrollTop - clientHeight < 100;
+  };
 
   useEffect(() => {
     if (triggerText) {
@@ -34,6 +41,7 @@ export default function ChatColumn({ chatMessages, setChatMessages, transcriptCh
     const newUserMsg = { id: uuidv4(), role: "user", content: textToSend };
     setChatMessages(prev => [...prev, newUserMsg]);
     setIsTyping(true);
+    autoScrollRef.current = true; // Auto-scroll on new message
 
     try {
       const contextText = transcriptChunks.slice(-60).map(c => `[${c.timestamp}] ${c.text}`).join("\n");
@@ -68,6 +76,11 @@ export default function ChatColumn({ chatMessages, setChatMessages, transcriptCh
     }
   };
 
+  const formatContent = (content) => {
+    // Basic cleanup: some models return <br> tags instead of standard markdown newlines
+    return content.replace(/<br\s*\/?>/gi, '\n');
+  };
+
   return (
     <div className="column">
       <div className="column-header">
@@ -77,20 +90,20 @@ export default function ChatColumn({ chatMessages, setChatMessages, transcriptCh
         </div>
       </div>
 
-      <div className="column-body" style={{ flex: 1, paddingBottom: 0 }}>
+      <div className="column-body" style={{ flex: 1, paddingBottom: 0 }} onScroll={handleScroll}>
         {chatMessages.length === 0 ? (
           <div style={{ textAlign: 'center', color: 'var(--text-tertiary)', marginTop: '40px', padding: '0 20px' }}>
             Click a live suggestion to expand upon it, or ask a custom question about the conversation below.
           </div>
         ) : (
           chatMessages.map(msg => (
-            <div key={msg.id} className={`chat-message ${msg.role}`}>
+            <div key={msg.id} className={`chat-message ${msg.role}`} style={{ whiteSpace: 'pre-wrap' }}>
               {msg.role === 'assistant' ? (
                 <div style={{ fontWeight: 600, fontSize: '0.8rem', marginBottom: 4, color: 'var(--accent-color)' }}>
                   Assistant
                 </div>
               ) : null}
-              {msg.content}
+              {formatContent(msg.content)}
             </div>
           ))
         )}
