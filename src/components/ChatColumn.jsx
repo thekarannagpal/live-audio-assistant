@@ -2,6 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { MessageSquare, Send } from 'lucide-react';
 import { sendChatMessageStream } from '../utils/groqClient';
 import { v4 as uuidv4 } from 'uuid';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 export default function ChatColumn({ chatMessages, setChatMessages, transcriptChunks, settings, triggerText, onTriggerProcessed }) {
   const [inputText, setInputText] = useState("");
@@ -97,13 +99,17 @@ export default function ChatColumn({ chatMessages, setChatMessages, transcriptCh
           </div>
         ) : (
           chatMessages.map(msg => (
-            <div key={msg.id} className={`chat-message ${msg.role}`} style={{ whiteSpace: 'pre-wrap' }}>
+            <div key={msg.id} className={`chat-message ${msg.role}`}>
               {msg.role === 'assistant' ? (
                 <div style={{ fontWeight: 600, fontSize: '0.8rem', marginBottom: 4, color: 'var(--accent-color)' }}>
                   Assistant
                 </div>
               ) : null}
-              {formatContent(msg.content)}
+              <div className="markdown-content">
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  {formatContent(msg.content)}
+                </ReactMarkdown>
+              </div>
             </div>
           ))
         )}

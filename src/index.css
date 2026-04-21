@@ -305,6 +305,60 @@ body {
   border-bottom-left-radius: 4px;
 }
 
+.markdown-content {
+  line-height: 1.6;
+}
+.markdown-content p {
+  margin-bottom: 8px;
+}
+.markdown-content p:last-child {
+  margin-bottom: 0;
+}
+.markdown-content strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+.markdown-content code {
+  background: rgba(255,255,255,0.1);
+  padding: 2px 4px;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 0.85em;
+}
+.markdown-content pre {
+  background: rgba(0,0,0,0.3);
+  padding: 12px;
+  border-radius: var(--rad-sm);
+  overflow-x: auto;
+  margin: 8px 0;
+}
+.markdown-content pre code {
+  background: transparent;
+  padding: 0;
+}
+.markdown-content table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 12px 0;
+  font-size: 0.9em;
+}
+.markdown-content th, .markdown-content td {
+  border: 1px solid rgba(255,255,255,0.1);
+  padding: 6px 10px;
+  text-align: left;
+}
+.markdown-content th {
+  background: rgba(255,255,255,0.05);
+  font-weight: 600;
+}
+.markdown-content a {
+  color: var(--accent-color);
+  text-decoration: none;
+}
+.markdown-content a:hover {
+  text-decoration: underline;
+}
+
 .chat-input-area {
   padding: 16px;
   background: var(--bg-dark);
