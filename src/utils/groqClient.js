@@ -26,7 +26,7 @@ export async function transcribeAudio(audioBlob, apiKey, model = "whisper-large-
   return data.text;
 }
 
-export async function generateSuggestions(transcript, prompt, apiKey, model = "llama-3.1-8b-instant") {
+export async function generateSuggestions(transcript, prompt, apiKey, model = "openai/gpt-oss-120b") {
   if (!apiKey) throw new Error("No API key provided.");
   if (!transcript.trim()) return [];
 
@@ -93,7 +93,7 @@ Example:
   }
 }
 
-export async function* sendChatMessageStream(messages, apiKey, model = "llama-3.3-70b-versatile") {
+export async function* sendChatMessageStream(messages, apiKey, model = "openai/gpt-oss-120b") {
   if (!apiKey) throw new Error("No API key provided.");
 
   const res = await fetch(`${GROQ_API_URL}/chat/completions`, {

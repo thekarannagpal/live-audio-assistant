@@ -9,7 +9,7 @@ import { exportSession } from './utils/exporter';
 const DEFAULT_SETTINGS = {
   apiKey: "",
   transcribeModel: "whisper-large-v3",
-  llmModel: "llama-3.3-70b-versatile",
+  llmModel: "openai/gpt-oss-120b",
   suggestionPrompt: "You are an expert AI meeting Copilot analyzing a live conversation. Your goal is to surface 3 HIGHLY ACTIONABLE and VALUABLE insights based on the recent transcript. Provide:\n1. A piercing follow-up question that drives the conversation forward.\n2. A strategic talking point or actionable advice.\n3. A crucial fact-check, summary, or clarification of complex specifics.\nBe extremely concise (limit previews to 1 short sentence). Avoid generic statements.",
   chatPrompt: "You are a concise, highly insightful AI assistant analyzing an ongoing live transcript. When answering user queries or expanding on suggestions, rely strictly on the provided Context. Do not hallucinate. Provide direct, high-value answers."
 };
@@ -18,12 +18,12 @@ function App() {
   const [settings, setSettings] = useState(() => {
     const saved = localStorage.getItem('liveAudioSettings');
     let parsedSettings = saved ? { ...DEFAULT_SETTINGS, ...JSON.parse(saved) } : DEFAULT_SETTINGS;
-    
+
     // Auto-migrate old/deprecated models in localStorage to the current standard
     if (parsedSettings.llmModel === 'llama3-70b-8192' || parsedSettings.llmModel === 'openai/gpt-oss-120b' || parsedSettings.llmModel === 'gpt-oss-120b') {
-      parsedSettings.llmModel = 'llama-3.3-70b-versatile';
+      parsedSettings.llmModel = 'openai/gpt-oss-120b';
     }
-    
+
     return parsedSettings;
   });
 
@@ -64,19 +64,19 @@ function App() {
       </header>
 
       <main className="app-content">
-        <TranscriptColumn 
+        <TranscriptColumn
           transcriptChunks={transcriptChunks}
           setTranscriptChunks={setTranscriptChunks}
           settings={settings}
         />
-        <SuggestionsColumn 
+        <SuggestionsColumn
           transcriptChunks={transcriptChunks}
           suggestionBatches={suggestionBatches}
           setSuggestionBatches={setSuggestionBatches}
           onSuggestionClick={(sug) => setChatTrigger(sug.detailedPrompt)}
           settings={settings}
         />
-        <ChatColumn 
+        <ChatColumn
           chatMessages={chatMessages}
           setChatMessages={setChatMessages}
           transcriptChunks={transcriptChunks}
@@ -87,7 +87,7 @@ function App() {
       </main>
 
       {showSettings && (
-        <SettingsModal 
+        <SettingsModal
           settings={settings}
           setSettings={setSettings}
           onClose={() => setShowSettings(false)}
