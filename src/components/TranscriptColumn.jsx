@@ -21,10 +21,20 @@ export default function TranscriptColumn({ transcriptChunks, setTranscriptChunks
   const processAudioChunk = async (audioBlob) => {
     if (audioBlob.size === 0) return;
     try {
-      const text = await transcribeAudio(audioBlob, settings.apiKey, settings.transcribeModel);
-      if (text && text.trim()) {
+      const rawText = await transcribeAudio(audioBlob, settings.apiKey, settings.transcribeModel);
+      const text = rawText ? rawText.trim() : "";
+      
+      // Filter out known Whisper hallucinations caused by silence/noise
+      const lowerText = text.toLowerCase();
+      const hallucinations = [
+        "thank you.", "thank you", "thanks.", "thanks", "thank you!", 
+        "thank you very much.", "thank you for watching.", "thank you for watching", 
+        "subtitles by amara.org", "you", "...", ".", "thank you so much.", "bye."
+      ];
+      
+      if (text && !hallucinations.includes(lowerText)) {
         const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute:'2-digit', second:'2-digit' });
-        setTranscriptChunks(prev => [...prev, { id: uuidv4(), timestamp: time, text: text.trim() }]);
+        setTranscriptChunks(prev => [...prev, { id: uuidv4(), timestamp: time, text: text }]);
       }
     } catch (e) {
       console.error("Transcription error:", e);
