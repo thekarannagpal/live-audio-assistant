@@ -8,6 +8,8 @@ export async function transcribeAudio(audioBlob, apiKey, model = "whisper-large-
   formData.append("file", audioBlob, "audio.webm");
   formData.append("model", model);
   formData.append("response_format", "json");
+  formData.append("language", "en");
+  formData.append("prompt", "This is an ongoing English conversation. Ignore silence and do not generate subtitles or thank you messages.");
 
   const res = await fetch(`${GROQ_API_URL}/audio/transcriptions`, {
     method: "POST",
